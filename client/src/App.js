@@ -10,12 +10,15 @@ import { themeSettings } from "./theme";
 import Navbar from "scenes/navbar";
 import { QueryClientProvider, QueryClient } from "react-query";
 import Error404 from "scenes/errorPage";
+import useTitle from "hooks/useTitle";
 
 function App() {
   const mode = useSelector((state) => state.mode);
   const theme = useMemo(() => createTheme(themeSettings(mode)), [mode]);
   const isAuth = Boolean(useSelector((state) => state.token));
   const queryClient = new QueryClient();
+
+  useTitle(global.config.app_name);
 
   return (
     <div className="app">
