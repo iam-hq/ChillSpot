@@ -5,6 +5,8 @@ const initialState = {
   user: null,
   token: null,
   posts: [],
+  isChatOpen: false,
+  chatUser: null,
 };
 
 export const authSlice = createSlice({
@@ -39,9 +41,15 @@ export const authSlice = createSlice({
       });
       state.posts = updatedPosts;
     },
+    setIsChatOpen: (state) => {
+        state.isChatOpen = !state.isChatOpen;
+    },
+    setChatUser: (state, action) => {
+      state.chatUser = action.payload.user;
+    }
   },
 });
 
-export const { setMode, setLogin, setLogout, setFriends, setPosts, setPost } =
+export const { setMode, setLogin, setLogout, setFriends, setPosts, setPost, setIsChatOpen, setChatUser } =
   authSlice.actions;
 export default authSlice.reducer;

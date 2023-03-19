@@ -8,44 +8,45 @@ import { Box, CssBaseline, ThemeProvider, Typography } from "@mui/material";
 import { createTheme } from "@mui/material/styles";
 import { themeSettings } from "./theme";
 import Navbar from "scenes/navbar";
+import { QueryClientProvider, QueryClient } from "react-query";
+import Error404 from "scenes/errorPage";
 
 function App() {
   const mode = useSelector((state) => state.mode);
   const theme = useMemo(() => createTheme(themeSettings(mode)), [mode]);
   const isAuth = Boolean(useSelector((state) => state.token));
+  const queryClient = new QueryClient();
 
   return (
     <div className="app">
-      <BrowserRouter>
-        <ThemeProvider theme={theme}>
-          <CssBaseline />
-          {!isAuth ? (
-            <Box
-              width="100%"
-              backgroundColor={theme.palette.background.alt}
-              p="1rem 6%"
-              textAlign="center"
-            >
-              <Typography fontWeight="bold" fontSize="32px" color="primary">
-                Sociopedia
-              </Typography>
-            </Box>
-          ) : (
-            <Navbar />
-          )}
-          <Routes>
-            <Route path="/" element={<LoginPage />} />
-            <Route
-              path="/home"
-              element={isAuth ? <HomePage /> : <Navigate to="/" />}
-            />
-            <Route
-              path="/profile/:userId"
-              element={isAuth ? <ProfilePage /> : <Navigate to="/" />}
-            />
-          </Routes>
-        </ThemeProvider>
-      </BrowserRouter>
+      <QueryClientProvider client={queryClient}>
+        <BrowserRouter>
+          <ThemeProvider theme={theme}>
+            <CssBaseline />
+            
+            {!isAuth ? (
+              <Box
+                width="100%"
+                backgroundColor={theme.palette.background.alt}
+                p="1rem 6%"
+                textAlign="center"
+              >
+                <Typography fontWeight="bold" fontSize="32px" color="primary">
+                {global.config.app_name}
+                </Typography>
+              </Box>
+            ) : (
+              <Navbar />
+            )}
+            <Routes>
+              <Route path="/" element={!isAuth ? <LoginPage /> : <Navigate to="/home" />} />
+              <Route path="/home" element={isAuth ? <HomePage /> : <Navigate to="/" />} />
+              <Route path="/profile/:userId" element={isAuth ? <ProfilePage /> : <Navigate to="/" />} />
+              <Route path="/*" element={<Error404 />} />
+            </Routes>
+          </ThemeProvider>
+        </BrowserRouter>
+      </QueryClientProvider>
     </div>
   );
 }

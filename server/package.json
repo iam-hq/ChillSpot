@@ -11,7 +11,8 @@
     "mongoose": "^6.9.2",
     "morgan": "^1.10.0",
     "multer": "^1.4.4",
-    "multer-gridfs-storage": "^5.0.2"
+    "multer-gridfs-storage": "^5.0.2",
+    "socket.io": "^4.6.1"
   },
   "name": "server",
   "version": "1.0.0",
@@ -21,10 +22,8 @@
     "yarn": "1.x",
     "node": "16.x"
   },
-  "devDependencies": {},
   "scripts": {
-    "start": "node build/index.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "nodemon index.js"
   },
   "keywords": [],
   "author": "Happy Lakudzala",

@@ -1,8 +1,8 @@
-import { PersonAddOutlined, PersonRemoveOutlined } from "@mui/icons-material";
+import { PersonAddOutlined, PersonRemoveOutlined, MessageOutlined } from "@mui/icons-material";
 import { Box, IconButton, Typography, useTheme } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { setFriends } from "state";
+import { setFriends, setIsChatOpen, setChatUser } from "state";
 import FlexBetween from "./FlexBetween";
 import UserImage from "./UserImage";
 
@@ -23,7 +23,7 @@ const Friend = ({ friendId, name, subtitle, userPicturePath }) => {
 
   const patchFriend = async () => {
     const response = await fetch(
-      `http://localhost:3001/users/${_id}/${friendId}`,
+      `${global.config.api_url}/users/${_id}/${friendId}`,
       {
         method: "PATCH",
         headers: {
@@ -36,9 +36,21 @@ const Friend = ({ friendId, name, subtitle, userPicturePath }) => {
     dispatch(setFriends({ friends: data }));
   };
 
+  const openChat = () => {
+    dispatch(setChatUser({
+      user: {
+        _id: friendId,
+        name: name,
+        userPicturePath: userPicturePath,
+        subtitle: subtitle,
+      }
+    }))
+    dispatch(setIsChatOpen(false));
+  }
+
   return (
     <FlexBetween>
-      <FlexBetween gap="1rem">
+      <FlexBetween gap="0.5rem">
         <UserImage image={userPicturePath} size="55px" />
         <Box
           onClick={() => {
@@ -63,18 +75,27 @@ const Friend = ({ friendId, name, subtitle, userPicturePath }) => {
           </Typography>
         </Box>
       </FlexBetween>
-      {(_id !== friendId) && (
-        <IconButton
-          onClick={() => patchFriend()}
-          sx={{ backgroundColor: primaryLight, p: "0.6rem" }}
-        >
-          {isFriend ? (
-            <PersonRemoveOutlined sx={{ color: primaryDark }} />
-          ) : (
-            <PersonAddOutlined sx={{ color: primaryDark }} />
-          )}
-        </IconButton>
-      )}
+
+        {(_id !== friendId) && (
+          <Box>
+            <IconButton
+              onClick={openChat}
+              sx={{ backgroundColor: primaryLight, p: "0.4rem", mr: "0.2rem" }}
+            >
+              <MessageOutlined sx={{ color: primaryDark }} />
+            </IconButton>
+            <IconButton
+              onClick={() => patchFriend()}
+              sx={{ backgroundColor: primaryLight, p: "0.4rem" }}
+            >
+              {isFriend ? (
+                <PersonRemoveOutlined sx={{ color: primaryDark }} />
+              ) : (
+                <PersonAddOutlined sx={{ color: primaryDark }} />
+              )}
+            </IconButton>
+          </Box>
+        )}
     </FlexBetween>
   );
 };

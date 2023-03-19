@@ -4,7 +4,7 @@ import {
   LocationOnOutlined,
   WorkOutlineOutlined,
 } from "@mui/icons-material";
-import { Box, Typography, Divider, useTheme } from "@mui/material";
+import { Box, Typography, Divider, useTheme, Modal, IconButton } from "@mui/material";
 import UserImage from "components/UserImage";
 import FlexBetween from "components/FlexBetween";
 import WidgetWrapper from "components/WidgetWrapper";
@@ -14,15 +14,18 @@ import { useNavigate } from "react-router-dom";
 
 const UserWidget = ({ userId, picturePath }) => {
   const [user, setUser] = useState(null);
+  const [isUserModalOpen, setIsUserModalOpen] = useState(false);
   const { palette } = useTheme();
   const navigate = useNavigate();
   const token = useSelector((state) => state.token);
+  const _id = useSelector((state) => state.user._id);
   const dark = palette.neutral.dark;
   const medium = palette.neutral.medium;
   const main = palette.neutral.main;
+  
 
   const getUser = async () => {
-    const response = await fetch(`http://localhost:3001/users/${userId}`, {
+    const response = await fetch(`${global.config.api_url}/users/${userId}`, {
       method: "GET",
       headers: { Authorization: `Bearer ${token}` },
     });
@@ -75,7 +78,38 @@ const UserWidget = ({ userId, picturePath }) => {
             <Typography color={medium}>{friends.length} friends</Typography>
           </Box>
         </FlexBetween>
-        <ManageAccountsOutlined />
+        {(userId === _id) && false && (
+          <>
+            <IconButton onClick={() => setIsUserModalOpen(!isUserModalOpen)}>
+            <ManageAccountsOutlined />
+            </IconButton>
+            <Modal 
+              open={isUserModalOpen} 
+              onClick={() => setIsUserModalOpen(!isUserModalOpen)}
+              aria-labelledby="update-user-title" 
+              aria-describedby="update-user-desc"
+            >
+              <WidgetWrapper 
+                sx={{ 
+                  outline: 0,
+                  m: "auto",
+                  width: "50%",
+                  position: "relative",
+                  top: "50%",
+                  transform: "translateY(-50%)",
+                  border: `0.2px solid ${medium}`
+                 }}
+              >
+                <Typography id="update-user-title" variant="h4">
+                  {user.firstName} {user.lastName}
+                </Typography>
+                <Typography id="update-user-desc">
+                  Title
+                </Typography>
+              </WidgetWrapper>
+            </Modal>
+          </>
+        )}
       </FlexBetween>
 
       <Divider />

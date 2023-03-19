@@ -5,10 +5,12 @@ import {
   InputBase,
   Typography,
   Select,
+  Menu,
   MenuItem,
   FormControl,
   useTheme,
   useMediaQuery,
+  Divider,
 } from "@mui/material";
 import {
   Search,
@@ -17,13 +19,15 @@ import {
   LightMode,
   Notifications,
   Help,
-  Menu,
+  Menu as MenuIcon,
   Close,
 } from "@mui/icons-material";
+import { usePopupState, bindTrigger, bindMenu } from "material-ui-popup-state/hooks";
 import { useDispatch, useSelector } from "react-redux";
 import { setMode, setLogout } from "state";
 import { useNavigate } from "react-router-dom";
 import FlexBetween from "components/FlexBetween";
+import MenuItemContent from "components/MenuItemContent";
 
 const Navbar = () => {
   const [isMobileMenuToggled, setIsMobileMenuToggled] = useState(false);
@@ -41,6 +45,16 @@ const Navbar = () => {
 
   const fullName = `${user.firstName} ${user.lastName}`;
 
+  const messagePopupState = usePopupState({
+    variant: "popover",
+    popupId: "messagesMenu"
+  });
+
+  const notificationPopupState = usePopupState({
+    variant: "popover",
+    popupId: "notificationMenu"
+  });
+
   return (
     <FlexBetween padding="1rem 6%" backgroundColor={alt}>
       <FlexBetween gap="1.75rem">
@@ -56,7 +70,7 @@ const Navbar = () => {
             },
           }}
         >
-          Sociopedia
+          {global.config.app_name}
         </Typography>
         {isNonMobileScreens && (
           <FlexBetween
@@ -83,8 +97,35 @@ const Navbar = () => {
               <LightMode sx={{ color: dark, fontSize: "25px" }} />
             )}
           </IconButton>
-          <Message sx={{ fontSize: "25px" }} />
-          <Notifications sx={{ fontSize: "25px" }} />
+
+          <IconButton variant="contained" {...bindTrigger(messagePopupState)}>
+            <Message sx={{ fontSize: "25px" }} />
+          </IconButton>
+          <Menu {...bindMenu(messagePopupState)}>
+            <MenuItemContent 
+              popupState={messagePopupState} 
+              title="Happy Lakudzala" 
+              subtitle="Hello bruv, how is you doing? I wanted to ask for help on something perharps you can be of assistance."
+              time="12/12/22 15:30" 
+            />
+          </Menu>
+
+          <IconButton variant="contained" {...bindTrigger(notificationPopupState)}>
+            <Notifications sx={{ fontSize: "25px" }} />
+          </IconButton>
+          <Menu {...bindMenu(notificationPopupState)}>
+            <MenuItemContent 
+              popupState={notificationPopupState} 
+              title="Happy Lakudzala" 
+              subtitle="Hello bruv, how is you doing? I wanted to ask for help on something perharps you can be of assistance."
+              time="12/12/22 15:30" 
+            />
+            <Divider />
+            <MenuItem onClick={() => {navigate("/messages"); messagePopupState.close();}} >
+              <Typography sx={{ textAlign: "center" }}>More Messages...</Typography>
+            </MenuItem>
+          </Menu>
+
           <Help sx={{ fontSize: "25px" }} />
           <FormControl variant="standard" value={fullName}>
             <Select
@@ -115,7 +156,7 @@ const Navbar = () => {
         <IconButton
           onClick={() => setIsMobileMenuToggled(!isMobileMenuToggled)}
         >
-          <Menu />
+          <MenuIcon />
         </IconButton>
       )}
 
